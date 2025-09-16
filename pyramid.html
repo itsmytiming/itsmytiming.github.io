@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>表情符號金字塔生成器</title>
+    <title>表情符號金字塔生成器 - Twitch风格</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,8 +13,8 @@
         }
         
         body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-            color: white;
+            background: linear-gradient(135deg, #0e0e10, #18181b, #1f1f23);
+            color: #efeff1;
             min-height: 100vh;
             padding: 20px;
             display: flex;
@@ -39,7 +39,8 @@
         h1 {
             font-size: 2.8rem;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            color: #9146ff;
+            text-shadow: 0 0 10px rgba(145, 70, 255, 0.5);
         }
         
         .description {
@@ -47,10 +48,11 @@
             max-width: 800px;
             margin: 0 auto 20px;
             line-height: 1.6;
+            color: #adadb8;
         }
         
         .controls {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(145, 70, 255, 0.1);
             backdrop-filter: blur(10px);
             padding: 25px;
             border-radius: 15px;
@@ -62,6 +64,7 @@
             flex-wrap: wrap;
             justify-content: space-between;
             gap: 20px;
+            border: 1px solid rgba(145, 70, 255, 0.2);
         }
         
         .control-group {
@@ -74,13 +77,14 @@
             margin-bottom: 8px;
             font-weight: 600;
             font-size: 1.1rem;
+            color: #efeff1;
         }
         
         input[type="range"] {
             width: 100%;
             height: 10px;
             -webkit-appearance: none;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(145, 70, 255, 0.2);
             border-radius: 5px;
             outline: none;
         }
@@ -90,9 +94,10 @@
             width: 22px;
             height: 22px;
             border-radius: 50%;
-            background: #ff7b25;
+            background: #9146ff;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 10px rgba(145, 70, 255, 0.5);
+            border: 2px solid #efeff1;
         }
         
         input[type="text"] {
@@ -100,10 +105,17 @@
             padding: 12px 15px;
             border: none;
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
+            background: rgba(24, 24, 27, 0.8);
+            color: #efeff1;
             font-size: 1.1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(145, 70, 255, 0.3);
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #9146ff;
+            box-shadow: 0 0 0 2px rgba(145, 70, 255, 0.3);
         }
         
         .value-display {
@@ -111,6 +123,7 @@
             text-align: center;
             margin-top: 8px;
             font-weight: 600;
+            color: #9146ff;
         }
         
         .pyramid-container {
@@ -119,9 +132,10 @@
             justify-content: center;
             margin-top: 20px;
             padding: 20px;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(145, 70, 255, 0.05);
             border-radius: 15px;
             overflow: auto;
+            border: 1px solid rgba(145, 70, 255, 0.1);
         }
         
         .pyramid {
@@ -131,11 +145,13 @@
             font-size: 20px;
             line-height: 1.2;
             padding: 20px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(24, 24, 27, 0.5);
             border-radius: 10px;
             transition: all 0.3s ease;
             max-width: 100%;
             overflow-x: auto;
+            color: #efeff1;
+            border: 1px solid rgba(145, 70, 255, 0.2);
         }
         
         .output-controls {
@@ -148,24 +164,24 @@
             padding: 12px 25px;
             border: none;
             border-radius: 8px;
-            background: #ff7b25;
+            background: #9146ff;
             color: white;
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 6px rgba(145, 70, 255, 0.3);
         }
         
         button:hover {
-            background: #ff8b40;
+            background: #a66aff;
             transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 6px 8px rgba(145, 70, 255, 0.4);
         }
         
         button:active {
             transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 4px rgba(145, 70, 255, 0.3);
         }
         
         #copy-notification {
@@ -173,28 +189,31 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(145, 70, 255, 0.9);
             color: white;
             padding: 10px 20px;
             border-radius: 5px;
             opacity: 0;
             transition: opacity 0.3s;
             z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
         
         .instructions {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(145, 70, 255, 0.1);
             backdrop-filter: blur(10px);
             padding: 20px;
             border-radius: 15px;
             margin-top: 30px;
             width: 100%;
             max-width: 800px;
+            border: 1px solid rgba(145, 70, 255, 0.2);
         }
         
         .instructions h2 {
             margin-bottom: 15px;
             text-align: center;
+            color: #9146ff;
         }
         
         .instructions ul {
@@ -204,13 +223,21 @@
         .instructions li {
             margin-bottom: 10px;
             line-height: 1.5;
+            color: #adadb8;
         }
         
         .limit-notice {
-            color: #ff7b25;
+            color: #9146ff;
             font-weight: 600;
             margin-top: 5px;
             text-align: center;
+        }
+        
+        code {
+            background: rgba(145, 70, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #efeff1;
         }
         
         @media (max-width: 768px) {
@@ -284,10 +311,8 @@
             <ul>
                 <li>調整滑桿來設定金字塔的行數（1-6行）</li>
                 <li>在輸入框中輸入或貼上您喜歡的表情符號或Twitch表情名稱</li>
-                <li>金字塔會使用Braille空白字符進行排版，即時更新</li>
                 <li>點擊"複製到剪貼板"按鈕將金字塔複製到剪貼板</li>
                 <li>點擊"測試格式"按鈕查看正確的金字塔格式</li>
-                <li>適用於Twitch聊天室、Discord和其他社交平台</li>
             </ul>
         </div>
     </div>
