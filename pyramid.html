@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>表情符號金字塔生成器</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .description {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            line-height: 1.6;
+        }
+        
+        .controls {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        
+        .control-group {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #ff7b25;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .value-display {
+            font-size: 1.2rem;
+            text-align: center;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+        
+        .pyramid-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            overflow: auto;
+        }
+        
+        .pyramid {
+            font-family: monospace;
+            white-space: pre;
+            text-align: center;
+            font-size: 20px;
+            line-height: 1.2;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        
+        .output-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            background: #ff7b25;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover {
+            background: #ff8b40;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.25);
+        }
+        
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        #copy-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 30px;
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        .instructions h2 {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .limit-notice {
+            color: #ff7b25;
+            font-weight: 600;
+            margin-top: 5px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .control-group {
+                width: 100%;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .description {
+                font-size: 1rem;
+            }
+            
+            .pyramid {
+                font-size: 16px;
+            }
+            
+            .output-controls {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>表情符號金字塔生成器</h1>
+            <p class="description">可調整高度和選擇您喜歡的表情符號。適用於Twitch聊天室。</p>
+        </header>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="rows">金字塔行數：</label>
+                <input type="range" id="rows" min="1" max="6" value="6">
+                <div class="value-display"><span id="rows-value">6</span> 行</div>
+                <div class="limit-notice">最大限制：6行</div>
+            </div>
+            
+            <div class="control-group">
+                <label for="emoji">表情符號：</label>
+                <input type="text" id="emoji" value="LUL" placeholder="輸入表情符號">
+                <div class="value-display">使用 <code>LUL</code> 等Twitch表情名稱</div>
+            </div>
+        </div>
+        
+        <div class="pyramid-container">
+            <div class="pyramid" id="pyramid"></div>
+        </div>
+        
+        <div class="output-controls">
+            <button id="copy-btn">複製到剪貼板</button>
+            <button id="clear-btn">清除</button>
+            <button id="test-btn">測試格式</button>
+        </div>
+        
+        <div id="copy-notification">已複製到剪貼板！</div>
+        
+        <div class="instructions">
+            <h2>使用說明</h2>
+            <ul>
+                <li>調整滑桿來設定金字塔的行數（1-6行）</li>
+                <li>在輸入框中輸入或貼上您喜歡的表情符號或Twitch表情名稱</li>
+                <li>金字塔會使用Braille空白字符進行排版，即時更新</li>
+                <li>點擊"複製到剪貼板"按鈕將金字塔複製到剪貼板</li>
+                <li>點擊"測試格式"按鈕查看正確的金字塔格式</li>
+                <li>適用於Twitch聊天室、Discord和其他社交平台</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const rowsSlider = document.getElementById('rows');
+            const rowsValue = document.getElementById('rows-value');
+            const emojiInput = document.getElementById('emoji');
+            const pyramidElement = document.getElementById('pyramid');
+            const copyBtn = document.getElementById('copy-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const testBtn = document.getElementById('test-btn');
+            const copyNotification = document.getElementById('copy-notification');
+            
+            // Braille空白字符
+            const brailleSpace = '⠀'; // 这是Braille空白字符
+            
+            // 初始化
+            updatePyramid();
+            
+            // 事件監聽器
+            rowsSlider.addEventListener('input', function() {
+                rowsValue.textContent = this.value;
+                updatePyramid();
+            });
+            
+            emojiInput.addEventListener('input', updatePyramid);
+            
+            copyBtn.addEventListener('click', function() {
+                const textToCopy = pyramidElement.textContent;
+                
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    // 显示复制成功通知
+                    copyNotification.style.opacity = '1';
+                    setTimeout(() => {
+                        copyNotification.style.opacity = '0';
+                    }, 2000);
+                });
+            });
+            
+            clearBtn.addEventListener('click', function() {
+                emojiInput.value = '';
+                updatePyramid();
+            });
+            
+            testBtn.addEventListener('click', function() {
+                // 设置测试用的表情符号
+                emojiInput.value = 'LUL';
+                updatePyramid();
+            });
+            
+            // 更新金字塔函數
+            function updatePyramid() {
+                const rows = parseInt(rowsSlider.value);
+                const emoji = emojiInput.value.trim() || ':(';
+                
+                let pyramidText = '';
+                
+                // 生成金字塔 - 按照您提供的格式
+                for (let i = 0; i < rows; i++) {
+                    // 计算当前行需要的Braille空白字符数量
+                    // 第一行: 21个空格
+                    // 第二行: 19个空格
+                    // 以此类推
+                    const spacesCount = 21 - 2 * i;
+                    
+                    // 添加行首的Braille空白字符
+                    for (let j = 0; j < spacesCount; j++) {
+                        pyramidText += brailleSpace;
+                    }
+                    
+                    // 在第一个表情符号前添加一个空格
+                    pyramidText += ' ';
+                    
+                    // 添加表情符號
+                    for (let k = 0; k <= i; k++) {
+                        pyramidText += emoji;
+                        
+                        // 在表情符号之间添加空格
+                        if (k < i) {
+                            pyramidText += ' ';
+                        }
+                    }
+                    
+                    // 换行（除了最后一行）
+                    if (i < rows - 1) {
+                        pyramidText += '\n';
+                    }
+                }
+                
+                pyramidElement.textContent = pyramidText;
+            }
+        });
+    </script>
+</body>
+</html>
