@@ -438,7 +438,7 @@
             <button id="copy-btn">複製到剪貼板</button>
             <button id="clear-btn">清除</button>
             <button id="test-btn">測試格式</button>
-            <button id="random-custom-btn">自訂隨機</button>
+            <button id="random-custom-btn" style="display: none;">自訂隨機</button>
         </div>
         
         <div id="copy-notification">已複製到剪貼板！</div>
@@ -627,6 +627,7 @@
                 multiModeBtn.classList.remove('active');
                 multiEmojiControls.style.display = 'none';
                 customEmotesPanel.style.display = 'none';
+                randomCustomBtn.style.display = 'none';
                 updatePyramid();
             });
             
@@ -636,6 +637,7 @@
                 singleModeBtn.classList.remove('active');
                 multiEmojiControls.style.display = 'block';
                 customEmotesPanel.style.display = 'block';
+                randomCustomBtn.style.display = 'flex';
                 updatePyramid();
             });
             
@@ -697,5 +699,3 @@
     </script>
 </body>
 </html>
-
-
